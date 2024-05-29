@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Renderizar arquivo XLSX</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+    }
+    #fileInput {
+        margin-top: 20px;
+    }
+    table {
+        margin: 20px auto;
+        border-collapse: collapse;
+        width: 80%;
+    }
+    th, td {
+        border: 1px solid #ccc;
+        padding: 8px;
+    }
+</style>
+</head>
+<body>
+<h1>Upload de arquivo XLSX e renderização na página</h1>
+<input type="file" id="fileInput" accept=".xlsx">
+<table id="dataTable"></table>
+
+<script>
+    document.getElementById('fileInput').addEventListener('change', handleFile);
+
+    function handleFile(e) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function (e) {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheetName = workbook.SheetNames[0];
+            const sheet = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+            renderTable(sheet);
+        };
+
+        reader.readAsArrayBuffer(file);
+    }
+
+    function renderTable(data) {
+        const table = document.getElementById('dataTable');
+        let tableHtml = '<tr>';
+
+        // Cabeçalho da tabela
+        for (const key in data[0]) {
+            tableHtml += '<th>' + key + '</th>';
+        }
+        tableHtml += '</tr>';
+
+        // Linhas da tabela
+        data.forEach(row => {
+            tableHtml += '<tr>';
+            for (const key in row) {
+                tableHtml += '<td>' + row[key] + '</td>';
+            }
+            tableHtml += '</tr>';
+        });
+
+        table.innerHTML = tableHtml;
+    }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.3/xlsx.full.min.js"></script>
+</body>
+</html>

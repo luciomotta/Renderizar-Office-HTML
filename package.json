@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "fs": "^0.0.1-security",
+    "jsontoxml": "^1.0.1",
+    "xlsx": "^0.18.5"
+  }
+}
